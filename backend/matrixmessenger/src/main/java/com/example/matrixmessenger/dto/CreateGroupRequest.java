@@ -14,7 +14,7 @@ public class CreateGroupRequest {
     private String name;
 
     @NotEmpty(message = "At least one member is required")
-    private List<String> memberIds;
+    private List<String> memberIDs;
 
     private Map<String,String> encryptedGroupKey; // Map of userId to encrypted group key
 

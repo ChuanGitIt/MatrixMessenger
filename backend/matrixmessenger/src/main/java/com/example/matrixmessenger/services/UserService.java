@@ -24,4 +24,8 @@ public class UserService {
             "certificate", user.getCertificate()
         );
     }
+
+    public Map<String, Object> getAllUsers() {
+        return Map.of("users", userRepository.findAll());
+    }
 }
