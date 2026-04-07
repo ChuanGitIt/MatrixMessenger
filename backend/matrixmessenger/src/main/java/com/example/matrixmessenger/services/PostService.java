@@ -41,6 +41,7 @@ public class PostService {
         post.setSenderID(request.getSenderID());
         post.setGroupID(request.getGroupID());
         post.setCipherText(request.getCipherText());
+        post.setIv(request.getIv());
         post.setTimestamp(Instant.now());
         postRepository.save(post);
         response.put("message", "Post ID=" + post.getId() + " created successfully");

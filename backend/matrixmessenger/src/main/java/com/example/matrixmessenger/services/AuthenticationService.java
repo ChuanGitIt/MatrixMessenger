@@ -30,6 +30,8 @@ public class AuthenticationService {
         User newUser = new User();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(passwordEncoder.encode(request.getPassword())); //BCrypt hashing
+        newUser.setPublicKey(request.getPublicKey());
+        newUser.setCertificate(request.getCertificate());
 
         userRepository.save(newUser);
         response.put("message", "User " + newUser.getUsername() + ", ID: " + newUser.getId() + " registered successfully");

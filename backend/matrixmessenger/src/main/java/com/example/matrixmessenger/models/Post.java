@@ -17,6 +17,5 @@ public class Post {
     private String groupID; // null for direct messages
     private String cipherText; // AES encrypted message content
     private String iv; // Initialization Vector for AES encryption
-
     private Instant timestamp;
 }

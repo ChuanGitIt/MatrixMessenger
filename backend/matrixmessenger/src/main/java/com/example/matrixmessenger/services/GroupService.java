@@ -32,6 +32,7 @@ public class GroupService {
         Group newGroup = new Group();
         newGroup.setName(request.getName());
         newGroup.setMemberIds(request.getMemberIds());
+        newGroup.setEncryptionKeys(request.getEncryptedGroupKey());
 
         groupRepository.save(newGroup);
         response.put("message", "Group " + newGroup.getName() + ", ID: " + newGroup.getId() + " created successfully"+

@@ -10,5 +10,8 @@ public class RegisterRequest {
     private String username;
     @NotBlank(message = "Password is required")
     private String password;
+
+    private String publicKey; // PEM format RSA
+    private String certificate; //PEM format X.509
     
 }

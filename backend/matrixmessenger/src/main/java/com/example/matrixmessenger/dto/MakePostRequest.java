@@ -11,4 +11,6 @@ public class MakePostRequest {
     private String groupID; // can be null
     @NotBlank(message = "Cipher text is required")
     private String cipherText;
+
+    private String iv; 
 }
