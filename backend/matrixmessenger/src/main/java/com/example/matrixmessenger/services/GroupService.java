@@ -39,6 +39,63 @@ public class GroupService {
         return response;
     } 
 
+    public Map<String,String> deleteGroup(String groupId) {
+        Map<String, String> response = new HashMap<>();
+        if (!groupRepository.existsById(groupId)) {
+            response.put("error", "Group with ID " + groupId + " does not exist");
+            return response;
+        }
+        groupRepository.deleteById(groupId);
+        response.put("message", "Group with ID " + groupId + " deleted successfully");
+        return response;
+    }
+
+    public Map<String,String> addMemberToGroup(String groupId, String memberId) {
+        Map<String, String> response = new HashMap<>();
+        if (!groupRepository.existsById(groupId)) {
+            response.put("error", "Group with ID " + groupId + " does not exist");
+            return response;
+        }
+        if (!userRepository.existsById(memberId)) {
+            response.put("error", "User with ID " + memberId + " does not exist");
+            return response;
+        }
+        Group group = groupRepository.findById(groupId).get();
+        List<String> members = group.getMemberIds();
+        if (members.contains(memberId)) {
+            response.put("error", "User with ID " + memberId + " is already a member of the group");
+            return response;
+        }
+        members.add(memberId);
+        group.setMemberIds(members);
+        groupRepository.save(group);
+        response.put("message", "User with ID " + memberId + " added to group with ID " + groupId);
+        return response;
+    }
+
+    public Map<String,String> removeMemberFromGroup(String groupId, String memberId) {
+        Map<String, String> response = new HashMap<>();
+        if (!groupRepository.existsById(groupId)) {
+            response.put("error", "Group with ID " + groupId + " does not exist");
+            return response;
+        }
+        if (!userRepository.existsById(memberId)) {
+            response.put("error", "User with ID " + memberId + " does not exist");
+            return response;
+        }
+        Group group = groupRepository.findById(groupId).get();
+        List<String> members = group.getMemberIds();
+        if (!members.contains(memberId)) {
+            response.put("error", "User with ID " + memberId + " is not a member of the group");
+            return response;
+        }
+        members.remove(memberId);
+        group.setMemberIds(members);
+        groupRepository.save(group);
+        response.put("message", "User with ID " + memberId + " removed from group with ID " + groupId);
+        return response;
+    }
+
     public List<Group> getAllGroups() {
         return groupRepository.findAll();
     }

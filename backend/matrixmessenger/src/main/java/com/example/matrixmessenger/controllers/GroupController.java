@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.matrixmessenger.dto.CreateGroupRequest;
+import com.example.matrixmessenger.dto.UserManage;
 import com.example.matrixmessenger.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,24 @@ public class GroupController {
     @PostMapping("/create")
     public ResponseEntity<String> createGroup(@RequestBody CreateGroupRequest request) {
         Map<String, String> result = groupService.createGroup(request);
+        if (result.containsKey("error")) {
+            return ResponseEntity.badRequest().body(result.get("error"));
+        }
+        return ResponseEntity.ok(result.get("message"));
+    }
+
+    @PostMapping("/addMember")
+    public ResponseEntity<String> addMemberToGroup(@RequestBody UserManage userManage) {
+        Map<String, String> result = groupService.addMemberToGroup(userManage.getGroupID(), userManage.getUserID());
+        if (result.containsKey("error")) {
+            return ResponseEntity.badRequest().body(result.get("error"));
+        }
+        return ResponseEntity.ok(result.get("message"));
+    }
+
+    @PostMapping("/removeMember")
+    public ResponseEntity<String> removeMemberFromGroup(@RequestBody UserManage userManage) {
+        Map<String, String> result = groupService.removeMemberFromGroup(userManage.getGroupID(), userManage.getUserID());
         if (result.containsKey("error")) {
             return ResponseEntity.badRequest().body(result.get("error"));
         }
