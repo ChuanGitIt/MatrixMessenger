@@ -22,7 +22,7 @@ public class GroupService {
     public Map<String, String> createGroup(CreateGroupRequest request) {
         Map<String, String> response = new HashMap<>();
         //check all member IDs are valid
-        for (String memberId : request.getMemberIds()) {
+        for (String memberId : request.getMemberIDs()) {
             if (!userRepository.existsById(memberId)) {
                 response.put("error", "User with ID " + memberId + " does not exist");
                 return response;
@@ -31,7 +31,7 @@ public class GroupService {
 
         Group newGroup = new Group();
         newGroup.setName(request.getName());
-        newGroup.setMemberIds(request.getMemberIds());
+        newGroup.setMemberIds(request.getMemberIDs());
         newGroup.setEncryptionKeys(request.getEncryptedGroupKey());
 
         groupRepository.save(newGroup);
