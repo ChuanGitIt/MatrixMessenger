@@ -89,6 +89,19 @@ export async function getGroup(groupID) {
     return await response.json();
 }
 
+export async function getAllGroups() {
+    const response = await fetch(`${API_BASE_URL}/groups/all`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
+    return await response.json();
+}
+
 export async function addGroupMember(groupID, memberID, encryptedGroupKey) {
     const response = await fetch(`${API_BASE_URL}/groups/addMember`, {
         method: 'POST',
