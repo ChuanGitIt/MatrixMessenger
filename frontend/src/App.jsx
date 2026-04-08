@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Register from './pages/Register/Register';
 import Login from './pages/Login/Login';
 import Group from './pages/Group/Group';
+import Post from './pages/Post/Post';
 import './App.css'
 
 function PrivateRoute({ children }) {
@@ -17,6 +18,9 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/groups" element={
                     <PrivateRoute><Group /></PrivateRoute>
+                } />
+                <Route path="/posts" element={
+                    <PrivateRoute><Post /></PrivateRoute>
                 } />
                 <Route path="/" element={<Navigate replace to="/login" />} />
             </Routes>

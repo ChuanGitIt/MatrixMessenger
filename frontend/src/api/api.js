@@ -160,7 +160,7 @@ export async function createPost(senderID,groupID,ciphertext,iv){
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ senderID, groupID, ciphertext, iv }),
+        body: JSON.stringify({ senderID, groupID, cipherText: ciphertext, iv }),
     });
      if (!response.ok) {
         throw new Error(await response.text());
