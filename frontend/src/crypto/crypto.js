@@ -55,7 +55,7 @@ export function derToPem(der,label){
     //base64 encode the binary string
     const base64String = btoa(binaryString);
     //split base64 string into lines of 64 characters for PEM formatting
-    const lines = base64.match(/.{1,64}/g).join('\n');
+    const lines = base64String.match(/.{1,64}/g).join('\n');
     //wrap with PEM header and footer
     return `-----BEGIN ${label}-----\n${lines}\n-----END ${label}-----`;
 }
@@ -63,7 +63,7 @@ export function derToPem(der,label){
 export function pemToDer(pem){
     //remove PEM header and footer
     const base64String = pem.replace(/-----BEGIN [^-]+-----/, '').replace(/-----END [^-]+-----/, '').replace(/\s/g, '');
-    const binary = atob(base64);
+    const binary = atob(base64String);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return bytes.buffer;
@@ -212,7 +212,7 @@ export async function encryptAESKeyForMember(AESKey, memberCertificatePem){
 
 // Decrypt the AES key using the member's private RSA key
 export async function decryptAESKeyForMember(encryptedAESKey, privateKey){
-    const encryptedAESKey = base64ToBuf(encryptedAESKey); //convert base64 back to raw bytes
+    const encryptedAESKeyRaw = base64ToBuf(encryptedAESKey); //convert base64 back to raw bytes
 
     //decrypt the AES key using the member's private RSA key with RSA-OAEP
     const aesKeyRaw = await crypto.subtle.decrypt(
@@ -220,7 +220,7 @@ export async function decryptAESKeyForMember(encryptedAESKey, privateKey){
             name: 'RSA-OAEP',
         },
         privateKey,
-        encryptedAESKey
+        encryptedAESKeyRaw
     );
     //import the decrypted raw AES key back into a CryptoKey object for use in encryption/decryption operations
     return await crypto.subtle.importKey(
@@ -242,3 +242,7 @@ export async function verifyCertificate(certificatePem){
     const isValid = await cert.verify(cert); //verify the certificate's signature and validity
     return isValid;
 }
+
+// Aliases for frontend compatibility
+export const generateRSAKeyPair = generateKeyPair;
+export const loadPrivateKey = getPrivateKey;

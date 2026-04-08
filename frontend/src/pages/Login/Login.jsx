@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/api';
-import { loadPrivateKey } from '../crypto/crypto';
+import { login } from '../../api/api';
+import { loadPrivateKey } from '../../crypto/crypto';
 import { getUserByUsername } from '../../api/api';
 
 export default function Login() {
@@ -19,10 +19,7 @@ export default function Login() {
         try {
             // 1: verify credentials with backend → get id + username
             const resonse = await login(username, password);
-            if(!resonse.ok){
-                console.log(resonse.body);
-                throw new Error('Invalid credentials');
-            }
+            console.log('Login response:', resonse);
 
             const user = await getUserByUsername(username);
             // Step 2: persist session
@@ -38,7 +35,7 @@ export default function Login() {
                 return;
             }
             
-            //navigate('/home');
+            navigate('/groups');
 
         } catch (err) {
             setError(err.message);

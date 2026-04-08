@@ -12,7 +12,7 @@ export async function register(username, password, publicKey, certificate) {
     if (!response.ok) {
         throw new Error(await response.text());
     }
-    return await response.json();
+    return response;
 }
 export async function login(username, password) {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -25,7 +25,7 @@ export async function login(username, password) {
     if (!response.ok) {
         throw new Error(await response.text());
     }
-    return await response.json();
+    return response;
 }
 
 //USER
@@ -37,6 +37,9 @@ export async function getUserByID(userID) {
             'Content-Type': 'application/json',
         },
     });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
     return response.json();
 }
 
@@ -47,6 +50,9 @@ export async function getUserByUsername(username) {
             'Content-Type': 'application/json',
         },
     });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
     return response.json();
 }
 
@@ -57,23 +63,26 @@ export async function getAllUsers() {
             'Content-Type': 'application/json',
         },
     });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
     return response.json();
 }
 
 //GROUPS
 
-export async function createGroup(groupName, memberIDs, encryptedGroupKey) {
+export async function createGroup(name, memberIDs, encryptedGroupKey) {
     const response = await fetch(`${API_BASE_URL}/groups/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupName, memberIDs, encryptedGroupKey }),
+        body: JSON.stringify({ name, memberIDs, encryptedGroupKey }),
     });
     if (!response.ok) {
         throw new Error(await response.text());
     }
-    return await response.json();
+    return response;
 }
 
 export async function getGroup(groupID) {
@@ -102,30 +111,59 @@ export async function getAllGroups() {
     return await response.json();
 }
 
-export async function addGroupMember(groupID, memberID, encryptedGroupKey) {
+export async function addGroupMember(groupID, userID, encryptedGroupKey) {
     const response = await fetch(`${API_BASE_URL}/groups/addMember`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupID, memberID, encryptedGroupKey }),
+        body: JSON.stringify({ groupID, userID, encryptedGroupKey }),
     });
     if (!response.ok) {
         throw new Error(await response.text());
     }
-    return await response.json();
+    return response;
 }
 
-export async function removeGroupMember(groupID, memberID, encryptedGroupKeys) {
+export async function removeGroupMember(groupID, userID, encryptedGroupKeys) {
     const response = await fetch(`${API_BASE_URL}/groups/removeMember`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupID, memberID, encryptedGroupKeys }),
+        body: JSON.stringify({ groupID, userID, encryptedGroupKeys }),
     });
     if (!response.ok) {
         throw new Error(await response.text());
     }
-    return await response.json();
+    return response;
+}
+
+//POSTS
+
+export async function getAllPosts(){
+    const response = await fetch(`${API_BASE_URL}/posts/all`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
+    return response.json();
+}
+
+export async function createPost(senderID,groupID,ciphertext,iv){
+    const response = await fetch(`${API_BASE_URL}/posts/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ senderID, groupID, ciphertext, iv }),
+    });
+     if (!response.ok) {
+        throw new Error(await response.text());
+    }
+    return response;
 }

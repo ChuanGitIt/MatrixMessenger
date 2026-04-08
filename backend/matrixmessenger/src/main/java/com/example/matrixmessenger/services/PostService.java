@@ -48,7 +48,7 @@ public class PostService {
         return response;
     }
     
-        public List<Post> getAllPosts() {
-            return postRepository.findAll();
+        public List<Post> getAllPostsOrdered() {
+            return postRepository.findAllByOrderByTimestampAsc();
         }
 }

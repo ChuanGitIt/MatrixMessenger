@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {useNaviagte} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import {register , login, getUserByUsername } from '../../api/api'
 import {
     generateRSAKeyPair,
@@ -9,10 +9,10 @@ import {
 } from '../../crypto/crypto'
 
 export default function Register() {
-    const navigate = useNaviagte();
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    //const [confirmPassword, setConfirmPassword] = useState('');
     const [userID, setUserID] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -41,14 +41,14 @@ export default function Register() {
 
             // 6 store private key securely in IndexedDB
             const User = await getUserByUsername(username);
-            await storePrivateKey(User.userID, keyPair.privateKey);
+            await storePrivateKey(User.id, keyPair.privateKey);
 
             // persist session 
-            localStorage.setItem('userID', User.userID);
+            localStorage.setItem('userId', User.id);
             localStorage.setItem('username', username);
 
             // redirect to home page
-            navigate('/home');
+            navigate('/groups');
 
         }
         catch(err){

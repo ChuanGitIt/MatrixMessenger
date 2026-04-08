@@ -31,8 +31,8 @@ public class PostController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+    public ResponseEntity<?> getAllPostsOrdered() {
+        return ResponseEntity.ok(postService.getAllPostsOrdered());
     }
     
 }

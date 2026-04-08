@@ -1,6 +1,6 @@
 package com.example.matrixmessenger.services;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    
+
     public User getUserByID(String userID) {
         return userRepository.findById(userID).orElse(null);
     }
@@ -22,8 +22,7 @@ public class UserService {
         return userRepository.findByUsername(username).orElse(null);
     }
 
-
-    public Map<String, Object> getAllUsers() {
-        return Map.of("users", userRepository.findAll());
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
