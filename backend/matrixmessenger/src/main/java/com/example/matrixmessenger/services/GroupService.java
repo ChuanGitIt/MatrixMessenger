@@ -6,7 +6,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.example.matrixmessenger.dto.AddMemberRequest;
 import com.example.matrixmessenger.dto.CreateGroupRequest;
+import com.example.matrixmessenger.dto.RemoveMemberRequest;
 import com.example.matrixmessenger.models.Group;
 import com.example.matrixmessenger.repo.GroupRepository;
 import com.example.matrixmessenger.repo.UserRepository;
@@ -51,49 +53,55 @@ public class GroupService {
         return response;
     }
 
-    public Map<String,String> addMemberToGroup(String groupId, String memberId) {
+    public Map<String,String> addMemberToGroup(AddMemberRequest request) {
         Map<String, String> response = new HashMap<>();
-        if (!groupRepository.existsById(groupId)) {
-            response.put("error", "Group with ID " + groupId + " does not exist");
+        if (!groupRepository.existsById(request.getGroupID())) {
+            response.put("error", "Group with ID " + request.getGroupID() + " does not exist");
             return response;
         }
-        if (!userRepository.existsById(memberId)) {
-            response.put("error", "User with ID " + memberId + " does not exist");
+        if (!userRepository.existsById(request.getUserID())) {
+            response.put("error", "User with ID " + request.getUserID() + " does not exist");
             return response;
         }
-        Group group = groupRepository.findById(groupId).get();
+        Group group = groupRepository.findById(request.getGroupID()).get();
         List<String> members = group.getMemberIds();
-        if (members.contains(memberId)) {
-            response.put("error", "User with ID " + memberId + " is already a member of the group");
+        if (members.contains(request.getUserID())) {
+            response.put("error", "User with ID " + request.getUserID() + " is already a member of the group");
             return response;
         }
-        members.add(memberId);
+        members.add(request.getUserID());
         group.setMemberIds(members);
+
+        // Add the encrypted group key for the new member
+        group.getEncryptionKeys().put(request.getUserID(), request.getEncryptedGroupKey());
+
         groupRepository.save(group);
-        response.put("message", "User with ID " + memberId + " added to group with ID " + groupId);
+        response.put("message", "User with ID " + request.getUserID() + " added to group with ID " + request.getGroupID());
         return response;
     }
 
-    public Map<String,String> removeMemberFromGroup(String groupId, String memberId) {
+    public Map<String,String> removeMemberFromGroup(RemoveMemberRequest request) {
         Map<String, String> response = new HashMap<>();
-        if (!groupRepository.existsById(groupId)) {
-            response.put("error", "Group with ID " + groupId + " does not exist");
+        if (!groupRepository.existsById(request.getGroupID())) {
+            response.put("error", "Group with ID " + request.getGroupID() + " does not exist");
             return response;
         }
-        if (!userRepository.existsById(memberId)) {
-            response.put("error", "User with ID " + memberId + " does not exist");
+        if (!userRepository.existsById(request.getUserID())) {
+            response.put("error", "User with ID " + request.getUserID() + " does not exist");
             return response;
         }
-        Group group = groupRepository.findById(groupId).get();
+        Group group = groupRepository.findById(request.getGroupID()).get();
         List<String> members = group.getMemberIds();
-        if (!members.contains(memberId)) {
-            response.put("error", "User with ID " + memberId + " is not a member of the group");
+        if (!members.contains(request.getUserID())) {
+            response.put("error", "User with ID " + request.getUserID() + " is not a member of the group");
             return response;
         }
-        members.remove(memberId);
+        members.remove(request.getUserID());
         group.setMemberIds(members);
+        //update the encryption keys for the remaining members after removing the user(rotated)
+        group.setEncryptionKeys(request.getEncryptedGroupKeys());
         groupRepository.save(group);
-        response.put("message", "User with ID " + memberId + " removed from group with ID " + groupId);
+        response.put("message", "User with ID " + request.getUserID() + " removed from group with ID " + request.getGroupID());
         return response;
     }
 

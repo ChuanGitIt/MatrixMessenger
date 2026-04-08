@@ -1,6 +1,8 @@
 package com.example.matrixmessenger.controllers;
 
 import java.util.Map;
+
+import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.matrixmessenger.dto.AddMemberRequest;
 import com.example.matrixmessenger.dto.CreateGroupRequest;
+import com.example.matrixmessenger.dto.RemoveMemberRequest;
 import com.example.matrixmessenger.dto.UserManage;
 import com.example.matrixmessenger.services.GroupService;
 
@@ -32,8 +36,8 @@ public class GroupController {
     }
 
     @PostMapping("/addMember")
-    public ResponseEntity<String> addMemberToGroup(@RequestBody UserManage userManage) {
-        Map<String, String> result = groupService.addMemberToGroup(userManage.getGroupID(), userManage.getUserID());
+    public ResponseEntity<String> addMemberToGroup(@RequestBody AddMemberRequest request) {
+        Map<String, String> result = groupService.addMemberToGroup(request);
         if (result.containsKey("error")) {
             return ResponseEntity.badRequest().body(result.get("error"));
         }
@@ -41,8 +45,8 @@ public class GroupController {
     }
 
     @PostMapping("/removeMember")
-    public ResponseEntity<String> removeMemberFromGroup(@RequestBody UserManage userManage) {
-        Map<String, String> result = groupService.removeMemberFromGroup(userManage.getGroupID(), userManage.getUserID());
+    public ResponseEntity<String> removeMemberFromGroup(@RequestBody RemoveMemberRequest request) {
+        Map<String, String> result = groupService.removeMemberFromGroup(request);
         if (result.containsKey("error")) {
             return ResponseEntity.badRequest().body(result.get("error"));
         }
