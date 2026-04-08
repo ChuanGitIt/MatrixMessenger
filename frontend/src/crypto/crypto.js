@@ -25,7 +25,7 @@ export async function generateKeyPair() {
     return keyPair;
 }
 
-export async function generateX509Certificate(keyPair, userID){
+export async function generateX509Certificate(keyPair, userName){
     const certificate = new pkijs.Certificate();
     certificate.version = 2; //X.509v3
     certificate.serialNumber = new asn1js.Integer({ value: Date.now() }); //unique serial number
@@ -35,7 +35,7 @@ export async function generateX509Certificate(keyPair, userID){
     certificate.notAfter.value = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); //1 year validity
     const commonName = new pkijs.AttributeTypeAndValue({
         type: '2.5.4.3', // Common Name Object Identifier
-        value: new asn1js.Utf8String({ value: userID }) //userID as common name
+        value: new asn1js.Utf8String({ value: userName }) //userName as common name
     });
     certificate.subject.typesAndValues.push(commonName); //who certificate belongs to
     certificate.issuer.typesAndValues.push(commonName); //who signed it (self-signed) (real world thrid party)
@@ -47,7 +47,7 @@ export async function generateX509Certificate(keyPair, userID){
 }
 
 //DER to PEM conversion helper function
-function derToPem(der,label){
+export function derToPem(der,label){
     //convert raw bytes to string chars
     const byteArray = new Uint8Array(der);
     const charArray = Array.from(byteArray, byte => String.fromCharCode(byte));
@@ -60,7 +60,7 @@ function derToPem(der,label){
     return `-----BEGIN ${label}-----\n${lines}\n-----END ${label}-----`;
 }
 
-function pemToDer(pem){
+export function pemToDer(pem){
     //remove PEM header and footer
     const base64String = pem.replace(/-----BEGIN [^-]+-----/, '').replace(/-----END [^-]+-----/, '').replace(/\s/g, '');
     const binary = atob(base64);

@@ -30,8 +30,18 @@ export async function login(username, password) {
 
 //USER
 
-export async function getUser(userID) {
+export async function getUserByID(userID) {
     const response = await fetch(`${API_BASE_URL}/users/${userID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    return response.json();
+}
+
+export async function getUserByUsername(username) {
+    const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

@@ -14,16 +14,14 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     
-    public Map<String,String> getUserPublicKeyAndCertificate(String userID){
-        User user = userRepository.findById(userID).orElse(null);
-        if (user == null) {
-            return Map.of("error", "User with ID " + userID + " does not exist");
-        }
-        return Map.of(
-            "publicKey", user.getPublicKey(),
-            "certificate", user.getCertificate()
-        );
+    public User getUserByID(String userID) {
+        return userRepository.findById(userID).orElse(null);
     }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
 
     public Map<String, Object> getAllUsers() {
         return Map.of("users", userRepository.findAll());
