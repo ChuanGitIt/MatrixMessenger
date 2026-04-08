@@ -66,13 +66,12 @@ export async function createGroup(groupName, memberIDs, encryptedGroupKey) {
     return await response.json();
 }
 
-export async function addGroupMember(groupID, memberID) {
-    const response = await fetch(`${API_BASE_URL}/groups/addMember`, {
-        method: 'POST',
+export async function getGroup(groupID) {
+    const response = await fetch(`${API_BASE_URL}/groups/get/${groupID}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupID, memberID }),
     });
     if (!response.ok) {
         throw new Error(await response.text());
@@ -80,13 +79,27 @@ export async function addGroupMember(groupID, memberID) {
     return await response.json();
 }
 
-export async function removeGroupMember(groupID, memberID) {
+export async function addGroupMember(groupID, memberID, encryptedGroupKey) {
+    const response = await fetch(`${API_BASE_URL}/groups/addMember`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ groupID, memberID, encryptedGroupKey }),
+    });
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
+    return await response.json();
+}
+
+export async function removeGroupMember(groupID, memberID, encryptedGroupKeys) {
     const response = await fetch(`${API_BASE_URL}/groups/removeMember`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ groupID, memberID }),
+        body: JSON.stringify({ groupID, memberID, encryptedGroupKeys }),
     });
     if (!response.ok) {
         throw new Error(await response.text());

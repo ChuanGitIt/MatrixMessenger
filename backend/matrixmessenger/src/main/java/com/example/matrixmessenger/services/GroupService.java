@@ -53,6 +53,10 @@ public class GroupService {
         return response;
     }
 
+    public Group getGroupById(String groupId) {
+        return groupRepository.findById(groupId).orElse(null);
+    }
+
     public Map<String,String> addMemberToGroup(AddMemberRequest request) {
         Map<String, String> response = new HashMap<>();
         if (!groupRepository.existsById(request.getGroupID())) {

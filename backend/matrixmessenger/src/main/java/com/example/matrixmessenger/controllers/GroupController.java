@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Add
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import com.example.matrixmessenger.dto.AddMemberRequest;
 import com.example.matrixmessenger.dto.CreateGroupRequest;
 import com.example.matrixmessenger.dto.RemoveMemberRequest;
 import com.example.matrixmessenger.dto.UserManage;
+import com.example.matrixmessenger.models.Group;
 import com.example.matrixmessenger.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,15 @@ public class GroupController {
             return ResponseEntity.badRequest().body(result.get("error"));
         }
         return ResponseEntity.ok(result.get("message"));
+    }
+
+    @GetMapping("/get/{GroupID}")
+    public ResponseEntity<Group> getGroupById(@PathVariable String GroupID) {
+        Group group = groupService.getGroupById(GroupID);
+        if (group == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(group);
     }
 
     @PostMapping("/addMember")
