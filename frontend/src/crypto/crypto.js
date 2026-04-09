@@ -181,6 +181,8 @@ export async function decryptMessage(aesKey, iv, ciphertext) {
 
 // Takes a certificate !! Using public key directly lead to leak!
 export async function encryptAESKeyForMember(AESKey, memberCertificatePem){
+    const isValid = await verifyCertificate(memberCertificatePem);
+    if (!isValid) throw new Error('Invalid certificate provided for member. Aborting AES key encryption.');
     //import the member's public key from their X.509 certificate
     const certDer = pemToDer(memberCertificatePem);
     const asn1 = asn1js.fromBER(certDer); //parse the DER-encoded certificate to extract the public key
