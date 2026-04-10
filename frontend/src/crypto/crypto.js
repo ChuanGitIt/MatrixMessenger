@@ -143,40 +143,15 @@ export async function generateAESKey() {
     );
 }
 
-export async function encryptMessage(aesKey, plaintext) {
-    //convert plaintext string to Uint8Array for encryption
-    const encoder = new TextEncoder();
-    const data = encoder.encode(plaintext);
-    //generate a random 96-bit IV for AES-GCM
-    const iv = crypto.getRandomValues(new Uint8Array(12));
+export async function verifyCertificate(certificatePem){
+    //get certificate object
+    const certDer = pemToDer(certificatePem);
+    const asn1 = asn1js.fromBER(certDer);
+    const cert = new pkijs.Certificate({ schema: asn1.result });
 
-    const ciphertext = await crypto.subtle.encrypt(
-        {
-            name: "AES-GCM",
-            iv: iv,
-        },
-        aesKey,
-        data
-    );
-    //return both the IV and ciphertext, (IV is needed for decryption)
-    return { iv: bufToBase64(iv.buffer), ciphertext: bufToBase64(ciphertext) };
-}
-export async function decryptMessage(aesKey, iv, ciphertext) {
-    //convert base64 back to raw bytes
-    const ciphertextBuf = base64ToBuf(ciphertext);
-    const ivBuf = base64ToBuf(iv);
-    
-    const decrypted = await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            iv: ivBuf,
-        },
-        aesKey,
-        ciphertextBuf
-    );
-    //convert the decrypted bytes back to a string
-    const decoder = new TextDecoder();
-    return decoder.decode(decrypted);
+    //self signed certificate, verify against itself
+    const isValid = await cert.verify(cert); //verify the certificate's signature and validity
+    return isValid;
 }
 
 // Takes a certificate !! Using public key directly lead to leak!
@@ -229,20 +204,47 @@ export async function decryptAESKeyForMember(encryptedAESKey, privateKey){
         'raw',
         aesKeyRaw,
         { name: 'AES-GCM', length: 256 },
-        false,          //not extractable
+        true,           //extractable — needed to re-encrypt for other members
         ['encrypt', 'decrypt'] //allow both encryption and decryption with this key
     );
 }
 
-export async function verifyCertificate(certificatePem){
-    //get certificate object
-    const certDer = pemToDer(certificatePem);
-    const asn1 = asn1js.fromBER(certDer);
-    const cert = new pkijs.Certificate({ schema: asn1.result });
 
-    //self signed certificate, verify against itself
-    const isValid = await cert.verify(cert); //verify the certificate's signature and validity
-    return isValid;
+
+export async function encryptMessage(aesKey, plaintext) {
+    //convert plaintext string to Uint8Array for encryption
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plaintext);
+    //generate a random 96-bit IV for AES-GCM
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const ciphertext = await crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            iv: iv,
+        },
+        aesKey,
+        data
+    );
+    //return both the IV and ciphertext, (IV is needed for decryption)
+    return { iv: bufToBase64(iv.buffer), ciphertext: bufToBase64(ciphertext) };
+}
+export async function decryptMessage(aesKey, iv, ciphertext) {
+    //convert base64 back to raw bytes
+    const ciphertextBuf = base64ToBuf(ciphertext);
+    const ivBuf = base64ToBuf(iv);
+    
+    const decrypted = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: ivBuf,
+        },
+        aesKey,
+        ciphertextBuf
+    );
+    //convert the decrypted bytes back to a string
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
 }
 
 // Aliases for frontend compatibility
